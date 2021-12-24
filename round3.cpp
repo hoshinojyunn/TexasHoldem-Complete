@@ -271,8 +271,12 @@ void round3::disable(const Player&player,Player&opponent){
     if(player.bet!=opponent.bet){
         ui->check->setDisabled(true);
     }
-    if(player.bonus==0||opponent.bonus==0){
+    if(player.bonus==0){
         ui->allin->setDisabled(true);
+        ui->raise->setDisabled(true);
+    }
+    if(player.bonus==0||opponent.bonus==0){
+        ui->check->setEnabled(true);
         ui->raise->setDisabled(true);
     }
 }
@@ -388,9 +392,11 @@ string round3::mechine_action(Player &player, Player &opponent,vector<pair<int,c
     }else if(mechine_plan=="follow"&&opponent.bonus<player.bet-opponent.bet){
         opponent.allin(pot);
         ui->opponent_message->setText("opponent all in");
+        mechine_plan="allin";
     }else if(mechine_plan=="raise"&&opponent.bonus<player.bet){
         opponent.allin(pot);
         ui->opponent_message->setText("opponent all in");
+        mechine_plan="allin";
     }
     return mechine_plan;
 }
@@ -408,6 +414,12 @@ void round3::bigblind_player_fold(){
 void round3::bigblind_player_check(){
     player.check();
     update_message(player,opponent);
+    if(player.bonus==0&&player.bet<opponent.bet){  //做无筹码情况判断
+        pot.total-=opponent.bet-player.bet;
+        opponent.bonus+=opponent.bet-player.bet;
+        opponent.bet=player.bet;
+        update_message(player,opponent);
+    }
     emit this->change_opponent();
 }
 void round3::bigblind_player_follow(){
@@ -439,6 +451,12 @@ void round3::smallblind_player_fold(){
 void round3::smallblind_player_check(){
     player.check();
     update_message(player,opponent);
+    if(player.bonus==0&&player.bet<opponent.bet){  //做无筹码情况判断
+        pot.total-=opponent.bet-player.bet;
+        opponent.bonus+=opponent.bet-player.bet;
+        opponent.bet=player.bet;
+        update_message(player,opponent);
+    }
     emit this->start_compare();
 }
 void round3::smallblind_player_follow(){
@@ -484,6 +502,7 @@ void round3::bigblind_opponent_judge(){
     string plan;
     if(opponent.bet<player.bet){
         plan=this->mechine_action(player,opponent,River_Card,pot);
+        //opponent_judge_num+=1;
         update_message(player,opponent);
         enable();
         disable(player,opponent);
@@ -502,7 +521,7 @@ void round3::bigblind_opponent_judge(){
         update_message(player,opponent);
     }
 
-    if(opponent.bet==player.bet&&plan!="follow"&&plan!="fold"){
+    if(opponent.bet==player.bet&&plan=="check"){
         emit this->start_compare();
     }else{
         emit this->change_player();

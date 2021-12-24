@@ -73,7 +73,7 @@ double cal_winRate(Player opponent, vector<pair<int, char>> River_Card)
     opponent_River.insert(opponent_River.cbegin(), opponent.Poker.cbegin(), opponent.Poker.cend());
     // int opponentBet=opponent.getBet();
     // int playerBet=player.getBet();
-    int count = 1000;
+    int count = 10000;
     vector<pair<int, char>> playerPoker;
     srand(time(nullptr));
     while (count--)
@@ -97,14 +97,15 @@ double cal_winRate(Player opponent, vector<pair<int, char>> River_Card)
         River_Card = copy;
         playerPoker.clear();
     }
-    double winRate = (win+(same/2)) * 1.0 / 1000;
-    double loseRate = (lose+(same/2)) * 1.0 / 1000;
+    double winRate = (win+(same/2)) * 1.0 / 10000;
+    double loseRate = (lose+(same/2)) * 1.0 / 10000;
     return winRate;
 }
 
 double cal_RR(double winRate, int bet, const jackPot&pot)
 {
     double pot_odds = bet*1.0 / (bet + pot.total);
+    qDebug()<<"pot odds is"<<pot_odds;
     double RR = winRate*1.0 / pot_odds;
     return RR;
 }
@@ -142,7 +143,7 @@ string machine_judge(double RR)
 {
     string judge;
     srand(time(nullptr));
-    if (RR < 0.8)
+    if (RR < 1.2)
     {
         double jud = (rand()%100) * 1.0 / 101;
         if (jud < 0.95)
@@ -154,7 +155,7 @@ string machine_judge(double RR)
             judge="raise";
         }
     }
-    else if (0.8 <= RR && RR < 1.0)
+    else if (1.2 <= RR && RR < 2.0)
     {
         double jud = (rand()%100) * 1.0 / 101;
         if (jud < 0.8)
@@ -170,7 +171,7 @@ string machine_judge(double RR)
             judge="raise";
         }
     }
-    else if (RR >= 1.0 && RR < 1.3)
+    else if (RR >= 2.0 && RR < 2.4)
     {
         double jud = (rand()%100) * 1.0 / 101;
         if (jud > 0.6)
@@ -182,7 +183,7 @@ string machine_judge(double RR)
             judge="raise";
         }
     }
-    else if (RR >= 1.3)
+    else if (RR >= 2.4)
     {
         double jud = (rand()%100) * 1.0 / 101;
         if (jud < 0.3)
@@ -199,8 +200,9 @@ string machine_judge(double RR)
 string machine_make_plan(const Player&opponent,const Player&player,vector<pair<int,char>>River_Card,const jackPot&pot){
     auto winRate = cal_winRate(opponent, River_Card);
     qDebug()<<"winrate is "<<winRate;
-    auto RR = cal_RR(winRate, player.bet - opponent.bet, pot);
-    int count1=500;
+    auto RR = cal_RR(winRate, opponent.bet, pot);
+    qDebug()<<"RR is"<<RR;
+    int count1=10000;
     map<string,int>count;
     map<string,int>judge;
     while(count1--){

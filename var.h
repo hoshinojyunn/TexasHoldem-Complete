@@ -9,6 +9,7 @@ extern bool round_change0;
 extern bool round_change1;
 extern bool round_change2;
 extern bool round_change3;
+//extern int opponent_judge_num;
 class var
 {
 public:

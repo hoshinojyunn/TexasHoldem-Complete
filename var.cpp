@@ -8,3 +8,4 @@ bool round_change0=false;
 bool round_change1=false;
 bool round_change2=false;
 bool round_change3=false;
+//int opponent_judge_num=0;

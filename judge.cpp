@@ -32,8 +32,8 @@ bool judge_same_flush(const std::vector<std::pair<int, char>> &arr) //判同花
     std::map<char, int> count;
     for (const auto &i : arr)
     {
-        ++count[i.first];
-        if (count[i.first] == 5)
+        ++count[i.second];
+        if (count[i.second] == 5)
         {
             return true;
         }
